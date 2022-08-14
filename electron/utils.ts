@@ -1,6 +1,6 @@
 import { WineInstallation, Release, Runner } from './types'
 import * as axios from 'axios'
-import { app, dialog, net, shell, Notification, BrowserWindow } from 'electron'
+import { app, dialog, shell, Notification, BrowserWindow } from 'electron'
 import { exec, spawn, spawnSync } from 'child_process'
 import { existsSync, rmSync, stat } from 'graceful-fs'
 import { promisify } from 'util'
