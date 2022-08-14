@@ -474,3 +474,5 @@ export interface GOGCloudSavesLocation {
   name: string
   location: string
 }
+
+export type ConnectivityStatus = 'offline' | 'check-online' | 'online'

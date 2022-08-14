@@ -12,7 +12,6 @@ import {
   execAsync,
   getLegendaryBin,
   getSteamRuntime,
-  isOnline,
   killPattern
 } from '../utils'
 import {
@@ -40,6 +39,7 @@ import { runLegendaryCommand } from './library'
 import { gameInfoStore } from './electronStores'
 import { removeNonSteamGame } from '../shortcuts/nonesteamgame/nonesteamgame'
 import shlex from 'shlex'
+import { isOnline } from 'online_monitor'
 
 class LegendaryGame extends Game {
   public appName: string

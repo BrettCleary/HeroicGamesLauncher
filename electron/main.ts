@@ -58,7 +58,6 @@ import {
   getGogdlVersion,
   getSystemInfo,
   handleExit,
-  isOnline,
   openUrlOrFile,
   resetHeroic,
   showAboutWindow,
@@ -111,6 +110,7 @@ import { gameInfoStore } from './legendary/electronStores'
 import { getFonts } from 'font-list'
 import { verifyWinePrefix } from './launcher'
 import shlex from 'shlex'
+import { initOnlineMonitor, isOnline } from './online_monitor'
 
 const { showMessageBox, showOpenDialog } = dialog
 const isWindows = platform() === 'win32'
@@ -326,6 +326,8 @@ if (!gotTheLock) {
     handleProtocol(mainWindow, argv)
   })
   app.whenReady().then(async () => {
+    initOnlineMonitor()
+
     const systemInfo = await getSystemInfo()
 
     logInfo(

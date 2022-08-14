@@ -450,8 +450,13 @@ export interface GOGCloudSavesLocation {
   location: string
 }
 
+export type ConnectivityStatus = 'offline' | 'check-online' | 'online'
 declare global {
   interface WindowEventMap {
     'controller-changed': CustomEvent<{ controllerId: string }>
+    'connectivity-changed': CustomEvent<{
+      status: ConnectivityStatus
+      retryIn?: number
+    }>
   }
 }

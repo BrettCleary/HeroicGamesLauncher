@@ -12,6 +12,9 @@ import GlobalState from 'src/state/GlobalState'
 import { UpdateComponentBase } from 'src/components/UI/UpdateComponent'
 import { initShortcuts } from './helpers/shortcuts'
 import { configStore } from './helpers/electronStores'
+import { initOnlineMonitor } from './helpers/onlineMonitor'
+
+initOnlineMonitor()
 
 const Backend = new HttpApi(null, {
   addPath: 'build/locales/{{lng}}/{{ns}}',

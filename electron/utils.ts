@@ -118,10 +118,6 @@ function semverGt(target: string, base: string) {
   return isGE
 }
 
-function isOnline() {
-  return net.isOnline()
-}
-
 export const getFileSize = fileSize.partial({ base: 2 })
 
 export function getWineFromProton(
@@ -765,7 +761,6 @@ export {
   errorHandler,
   execAsync,
   handleExit,
-  isOnline,
   isEpicServiceOffline,
   openUrlOrFile,
   semverGt,
