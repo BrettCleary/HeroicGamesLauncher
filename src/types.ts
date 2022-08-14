@@ -455,3 +455,8 @@ declare global {
     'controller-changed': CustomEvent<{ controllerId: string }>
   }
 }
+
+export interface SettingsContextType {
+  getSetting: (key: string) => unknown
+  setSetting: (key: string, value: unknown) => void
+}
