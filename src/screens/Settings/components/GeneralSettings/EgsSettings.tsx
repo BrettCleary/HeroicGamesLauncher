@@ -23,7 +23,7 @@ const EgsSettings = () => {
     'egsLinkedPath',
     ''
   )
-  const [egsPath, setEgsPath] = useSetting<string>('egsPath', '')
+  const [egsPath, setEgsPath] = useSetting<string>('egsPath', egsLinkedPath)
   const isLinked = Boolean(egsLinkedPath.length)
   const isWindows = platform === 'win32'
 
