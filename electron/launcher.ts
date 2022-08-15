@@ -48,7 +48,7 @@ import {
 import { spawn } from 'child_process'
 import shlex from 'shlex'
 import { Game } from './games'
-import { isOnline } from 'online_monitor'
+import { isOnline } from './online_monitor'
 
 async function prepareLaunch(
   game: LegendaryGame | GOGGame,

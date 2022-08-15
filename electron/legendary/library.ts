@@ -38,7 +38,7 @@ import {
 import { GlobalConfig } from '../config'
 import { installStore, libraryStore } from './electronStores'
 import { callRunner } from '../launcher'
-import { isOnline } from 'online_monitor'
+import { isOnline } from '../online_monitor'
 
 /**
  * Legendary LegendaryLibrary.

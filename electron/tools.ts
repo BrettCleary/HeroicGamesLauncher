@@ -9,7 +9,7 @@ import { execOptions, heroicToolsPath, userHome } from './constants'
 import { logError, logInfo, LogPrefix, logWarning } from './logger/logger'
 import i18next from 'i18next'
 import { dirname } from 'path'
-import { isOnline } from 'online_monitor'
+import { isOnline } from './online_monitor'
 
 export const DXVK = {
   getLatest: async () => {

@@ -1,3 +1,4 @@
+import { ipcMain } from 'electron'
 import { heroicAnticheatDataPath, isLinux } from '../constants'
 import * as axios from 'axios'
 import { logInfo, LogPrefix, logWarning } from '../logger/logger'
@@ -7,18 +8,20 @@ import { AntiCheatInfo } from '../types'
 async function downloadAntiCheatData() {
   if (!isLinux) return
 
-  try {
-    const { data } = await axios.default.get(
-      'https://raw.githubusercontent.com/Starz0r/AreWeAntiCheatYet/HEAD/games.json'
-    )
-    writeFileSync(heroicAnticheatDataPath, JSON.stringify(data, null, 2))
-    logInfo(`AreWeAntiCheatYet data downloaded`, LogPrefix.Backend)
-  } catch (error) {
-    logWarning(
-      `Failed download of AreWeAntiCheatYet data: ${error}`,
-      LogPrefix.Backend
-    )
-  }
+  ipcMain.once('online', async () => {
+    try {
+      const { data } = await axios.default.get(
+        'https://raw.githubusercontent.com/Starz0r/AreWeAntiCheatYet/HEAD/games.json'
+      )
+      writeFileSync(heroicAnticheatDataPath, JSON.stringify(data, null, 2))
+      logInfo(`AreWeAntiCheatYet data downloaded`, LogPrefix.Backend)
+    } catch (error) {
+      logWarning(
+        `Failed download of AreWeAntiCheatYet data: ${error}`,
+        LogPrefix.Backend
+      )
+    }
+  })
 }
 
 function gameAnticheatInfo(appNamespace: string): AntiCheatInfo | null {

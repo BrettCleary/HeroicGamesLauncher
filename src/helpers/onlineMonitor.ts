@@ -75,4 +75,6 @@ export const initOnlineMonitor = () => {
     }
     setStatus('offline')
   })
+
+  setStatus(navigator.onLine ? 'online' : 'offline')
 }

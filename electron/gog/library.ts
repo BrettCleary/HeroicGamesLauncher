@@ -22,7 +22,7 @@ import {
   installedGamesStore
 } from './electronStores'
 import { callRunner } from '../launcher'
-import { isOnline } from 'online_monitor'
+import { isOnline } from '../online_monitor'
 
 export class GOGLibrary {
   private static globalInstance: GOGLibrary = null
