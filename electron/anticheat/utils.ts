@@ -1,14 +1,14 @@
-import { ipcMain } from 'electron'
 import { heroicAnticheatDataPath, isLinux } from '../constants'
 import * as axios from 'axios'
 import { logInfo, LogPrefix, logWarning } from '../logger/logger'
 import { readFileSync, writeFileSync } from 'graceful-fs'
 import { AntiCheatInfo } from '../types'
+import { runOnceWhenOnline } from '../online_monitor'
 
 async function downloadAntiCheatData() {
   if (!isLinux) return
 
-  ipcMain.once('online', async () => {
+  runOnceWhenOnline(async () => {
     try {
       const { data } = await axios.default.get(
         'https://raw.githubusercontent.com/Starz0r/AreWeAntiCheatYet/HEAD/games.json'

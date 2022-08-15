@@ -110,7 +110,11 @@ import { gameInfoStore } from './legendary/electronStores'
 import { getFonts } from 'font-list'
 import { verifyWinePrefix } from './launcher'
 import shlex from 'shlex'
-import { initOnlineMonitor, isOnline } from './online_monitor'
+import {
+  initOnlineMonitor,
+  isOnline,
+  runOnceWhenOnline
+} from './online_monitor'
 
 const { showMessageBox, showOpenDialog } = dialog
 const isWindows = platform() === 'win32'
@@ -342,7 +346,7 @@ if (!gotTheLock) {
     // We can't use .config since apparently its not loaded fast enough.
     const { language, darkTrayIcon } = await GlobalConfig.get().getSettings()
 
-    ipcMain.once('online', async () => {
+    runOnceWhenOnline(async () => {
       const isLoggedIn = LegendaryUser.isLoggedIn()
 
       if (!isLoggedIn) {

@@ -104,8 +104,16 @@ export const initOnlineMonitor = () => {
 }
 
 export const makeNetworkRequest = (callback: () => unknown) => {
-  if (status === 'online') {
+  if (isOnline()) {
     callback()
+  }
+}
+
+export const runOnceWhenOnline = (callback: () => unknown) => {
+  if (isOnline()) {
+    callback()
+  } else {
+    ipcMain.once('online', () => callback())
   }
 }
 
