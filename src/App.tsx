@@ -12,8 +12,7 @@ import Settings from './screens/Settings'
 import Accessibility from './screens/Accessibility'
 import ContextProvider from './state/ContextProvider'
 import classNames from 'classnames'
-import { ControllerHints } from './components/UI'
-import OfflineMessage from './components/UI/OfflineMessage'
+import { ControllerHints, OfflineMessage } from './components/UI'
 
 function App() {
   const { epic, gog, contentFontFamily, actionsFontFamily, sidebarCollapsed } =
