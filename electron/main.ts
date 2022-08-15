@@ -341,17 +341,20 @@ if (!gotTheLock) {
     logInfo(`\n\n${systemInfo}\n`, LogPrefix.Backend)
     // We can't use .config since apparently its not loaded fast enough.
     const { language, darkTrayIcon } = await GlobalConfig.get().getSettings()
-    const isLoggedIn = LegendaryUser.isLoggedIn()
 
-    if (!isLoggedIn) {
-      logInfo('User Not Found, removing it from Store', LogPrefix.Backend)
-      configStore.delete('userinfo')
-    }
+    ipcMain.once('online', async () => {
+      const isLoggedIn = LegendaryUser.isLoggedIn()
 
-    // Update user details
-    if (GOGUser.isLoggedIn()) {
-      GOGUser.getUserDetails()
-    }
+      if (!isLoggedIn) {
+        logInfo('User Not Found, removing it from Store', LogPrefix.Backend)
+        configStore.delete('userinfo')
+      }
+
+      // Update user details
+      if (GOGUser.isLoggedIn()) {
+        GOGUser.getUserDetails()
+      }
+    })
 
     await i18next.use(Backend).init({
       backend: {
