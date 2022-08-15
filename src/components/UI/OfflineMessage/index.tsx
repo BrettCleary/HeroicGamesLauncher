@@ -1,38 +1,20 @@
-import React, { useEffect, useState } from 'react'
-import { getStatus } from 'src/helpers/onlineMonitor'
-import { ConnectivityStatus } from 'src/types'
+import React, { useContext } from 'react'
+import ContextProvider from 'src/state/ContextProvider'
 import './index.css'
 
 const OfflineMessage = () => {
-  const [status, setStatus] = useState<ConnectivityStatus>(getStatus())
-  const [retryIn, setRetry] = useState<number>(0)
-
-  // listen to custom connectivity-changed event to update state
-  useEffect(() => {
-    const onStatusChange = (
-      ev: CustomEvent<{ status: ConnectivityStatus; retryIn?: number }>
-    ) => {
-      setStatus(ev.detail.status)
-      setRetry(ev.detail.retryIn || 0)
-    }
-
-    window.addEventListener('connectivity-changed', onStatusChange)
-
-    return () => {
-      window.removeEventListener('connectivity-changed', onStatusChange)
-    }
-  }, [])
+  const { connectivity } = useContext(ContextProvider)
 
   // render nothing if online
-  if (status === 'online') {
-    return null
+  if (connectivity.status === 'online') {
+    return <></>
   }
 
   let content = 'Offline'
 
-  if (status === 'check-online') {
-    if (retryIn) {
-      content += `Retrying in ... ${retryIn} seconds`
+  if (connectivity.status === 'check-online') {
+    if (connectivity.retryIn) {
+      content += `Retrying in ... ${connectivity.retryIn} seconds`
     } else {
       content = 'Retrying'
     }

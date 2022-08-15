@@ -123,6 +123,7 @@ export interface ContextType {
   setSideBarCollapsed: (value: boolean) => void
   sidebarCollapsed: boolean
   activeController: string
+  connectivity: { status: ConnectivityStatus; retryIn: number }
 }
 
 export type LibraryTopSectionOptions =
