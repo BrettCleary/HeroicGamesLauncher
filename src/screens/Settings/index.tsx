@@ -52,7 +52,7 @@ export interface LocationState {
 function Settings() {
   const { t, i18n } = useTranslation()
   const {
-    state: { fromGameCard, runner, isLinuxNative, isMacNative }
+    state: { fromGameCard, runner }
   } = useLocation() as { state: LocationState }
   const { platform } = useContext(ContextProvider)
   const isWin = platform === 'win32'
@@ -65,7 +65,6 @@ function Settings() {
   const [winePrefix, setWinePrefix] = useState(`${home}/.wine`)
   const [wineCrossoverBottle, setWineCrossoverBottle] = useState('Heroic')
   const [defaultWinePrefix, setDefaultWinePrefix] = useState('')
-  const [targetExe, setTargetExe] = useState('')
   const [enviromentOptions, setEnviromentOptions] = useState<
     EnviromentVariable[]
   >([])
@@ -85,22 +84,6 @@ function Settings() {
     on: useGameMode,
     toggle: toggleUseGameMode,
     setOn: setUseGameMode
-  } = useToggle(false)
-  const {
-    on: nvidiaPrime,
-    toggle: toggleNvidiaPrime,
-    setOn: setUseNvidiaPrime
-  } = useToggle(false)
-  const { on: showFps, toggle: toggleFps, setOn: setShowFps } = useToggle(false)
-  const {
-    on: audioFix,
-    toggle: toggleAudioFix,
-    setOn: setAudioFix
-  } = useToggle(false)
-  const {
-    on: showMangohud,
-    toggle: toggleMangoHud,
-    setOn: setShowMangoHud
   } = useToggle(false)
   const {
     on: autoInstallDxvk,
@@ -177,15 +160,11 @@ function Settings() {
       setCurrentConfig(config)
       setAutoSyncSaves(config.autoSyncSaves)
       setUseGameMode(config.useGameMode)
-      setShowFps(config.showFps)
-      setAudioFix(config.audioFix)
-      setShowMangoHud(config.showMangohud)
       setWineVersion(config.wineVersion)
       setWinePrefix(config.winePrefix)
       setWineCrossoverBottle(config.wineCrossoverBottle)
       setEnviromentOptions(config.enviromentOptions)
       setWrapperOptions(config.wrapperOptions)
-      setUseNvidiaPrime(config.nvidiaPrime)
       setAutoInstallDxvk(config.autoInstallDxvk)
       setAutoInstallVkd3d(config.autoInstallVkd3d)
       setPreferSystemLibs(config.preferSystemLibs)
@@ -198,7 +177,6 @@ function Settings() {
       setGogSavesLocations(config.gogSaves || [])
       setCustomWinePaths(config.customWinePaths || [])
       setCustomWinePaths(config.customWinePaths || [])
-      setTargetExe(config.targetExe || '')
       setDefaultWinePrefix(config.defaultWinePrefix)
       setEacRuntime(config.eacRuntime || false)
       setBattlEyeRuntime(config.battlEyeRuntime || false)
@@ -327,29 +305,10 @@ function Settings() {
             )}
             {isOtherSettings && (
               <OtherSettings
-                runner={runner}
                 enviromentOptions={enviromentOptions}
                 wrapperOptions={wrapperOptions}
                 setEnviromentOptions={setEnviromentOptions}
                 setWrapperOptions={setWrapperOptions}
-                useGameMode={useGameMode}
-                toggleUseGameMode={toggleUseGameMode}
-                eacRuntime={eacRuntime}
-                toggleEacRuntime={toggleEacRuntime}
-                primeRun={nvidiaPrime}
-                togglePrimeRun={toggleNvidiaPrime}
-                showFps={showFps}
-                toggleFps={toggleFps}
-                audioFix={audioFix}
-                toggleAudioFix={toggleAudioFix}
-                showMangohud={showMangohud}
-                toggleMangoHud={toggleMangoHud}
-                isDefault={isDefault}
-                targetExe={targetExe}
-                setTargetExe={setTargetExe}
-                isMacNative={isMacNative}
-                isLinuxNative={isLinuxNative}
-                appName={appName}
               />
             )}
             {isSyncSettings &&

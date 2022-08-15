@@ -1,21 +1,11 @@
 import './index.css'
 
-import React, { useCallback, useContext } from 'react'
+import React, { useContext } from 'react'
 
 import { useTranslation } from 'react-i18next'
 import ContextProvider from 'src/state/ContextProvider'
-import {
-  InfoBox,
-  ToggleSwitch,
-  TextInputWithIconField
-} from 'src/components/UI'
-import CreateNewFolder from '@mui/icons-material/CreateNewFolder'
-import { EnviromentVariable, Path, Runner, WrapperVariable } from 'src/types'
-import Backspace from '@mui/icons-material/Backspace'
-import { getGameInfo } from 'src/helpers'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCircleInfo } from '@fortawesome/free-solid-svg-icons'
-import { ipcRenderer } from 'src/helpers'
+import { InfoBox } from 'src/components/UI'
+import { EnviromentVariable, WrapperVariable } from 'src/types'
 import { ColumnProps, TableInput } from 'src/components/UI/TwoColTableInput'
 import PreferedLanguage from './PreferedLanguage'
 import LauncherArgs from './LauncherArgs'
@@ -24,57 +14,26 @@ import MaxRecentGames from './MaxRecentGames'
 import DiscordRPC from './DiscordRPC'
 import Shortcuts from './Shortcuts'
 import OfflineMode from './OfflineMode'
+import SteamRuntime from './SteamRuntime'
+import Mongohud from './Mongohud'
+import AudioFix from './AudioFix'
+import PrimerRun from './PrimerRun'
+import GameMode from './GameMode'
+import ShowFPS from './ShowFPS'
+import AlternativeExe from './AlternativeExe'
 
 interface Props {
-  audioFix: boolean
-  isDefault: boolean
-  isMacNative: boolean
-  isLinuxNative: boolean
   enviromentOptions: EnviromentVariable[]
   wrapperOptions: WrapperVariable[]
-  primeRun: boolean
   setEnviromentOptions: (value: EnviromentVariable[]) => void
   setWrapperOptions: (value: WrapperVariable[]) => void
-  setTargetExe: (value: string) => void
-  showFps: boolean
-  showMangohud: boolean
-  toggleAudioFix: () => void
-  toggleFps: () => void
-  toggleMangoHud: () => void
-  togglePrimeRun: () => void
-  toggleUseGameMode: () => void
-  toggleEacRuntime: () => void
-  targetExe: string
-  useGameMode: boolean
-  eacRuntime: boolean
-  appName: string
-  runner: Runner
 }
 
 export default function OtherSettings({
   enviromentOptions,
   setEnviromentOptions,
   wrapperOptions,
-  setWrapperOptions,
-  useGameMode,
-  toggleUseGameMode,
-  showFps,
-  toggleFps,
-  audioFix,
-  toggleAudioFix,
-  showMangohud,
-  toggleMangoHud,
-  isDefault,
-  primeRun,
-  togglePrimeRun,
-  setTargetExe,
-  targetExe,
-  isMacNative,
-  isLinuxNative,
-  appName,
-  toggleEacRuntime,
-  eacRuntime,
-  runner
+  setWrapperOptions
 }: Props) {
   const handleEnviromentVariables = (values: ColumnProps[]) => {
     const envs: EnviromentVariable[] = []
@@ -111,8 +70,6 @@ export default function OtherSettings({
   const { t } = useTranslation()
   const { platform } = useContext(ContextProvider)
   const isWin = platform === 'win32'
-  const isLinux = platform === 'linux'
-  const shouldRenderFpsOption = !isMacNative && !isWin && !isLinuxNative
 
   const wrapperInfo = (
     <InfoBox text="infobox.help">
@@ -123,131 +80,23 @@ export default function OtherSettings({
     </InfoBox>
   )
 
-  const handleTargetExe = useCallback(async () => {
-    if (!targetExe.length) {
-      const gameinfo = await getGameInfo(appName, runner)
-
-      ipcRenderer
-        .invoke('openDialog', {
-          buttonLabel: t('box.select.button', 'Select'),
-          properties: ['openFile'],
-          title: t('box.select.exe', 'Select EXE'),
-          defaultPath: gameinfo.install.install_path
-        })
-        .then(({ path }: Path) => setTargetExe(path || targetExe))
-    }
-    setTargetExe('')
-  }, [targetExe])
-
-  async function handleGameMode() {
-    if (useGameMode && eacRuntime) {
-      const isFlatpak = await ipcRenderer.invoke('isFlatpak')
-      if (isFlatpak) {
-        const { response } = await ipcRenderer.invoke('openMessageBox', {
-          message: t(
-            'settings.gameMode.eacRuntimeEnabled.message',
-            "The EAC runtime is enabled, which won't function correctly without GameMode. Do you want to disable the EAC Runtime and GameMode?"
-          ),
-          title: t(
-            'settings.gameMode.eacRuntimeEnabled.title',
-            'EAC runtime enabled'
-          ),
-          buttons: [t('box.yes'), t('box.no')]
-        })
-        if (response === 1) {
-          return
-        }
-        toggleEacRuntime()
-      }
-    }
-    toggleUseGameMode()
-  }
-
   return (
     <>
       <h3 className="settingSubheader">{t('settings.navbar.other')}</h3>
-      {!isDefault && (
-        <TextInputWithIconField
-          label={t(
-            'setting.change-target-exe',
-            'Select an alternative EXE to run'
-          )}
-          htmlId="setinstallpath"
-          value={targetExe.replaceAll("'", '')}
-          placeholder={targetExe || t('box.select.exe', 'Select EXE...')}
-          onChange={(event) => setTargetExe(event.target.value)}
-          icon={
-            !targetExe.length ? (
-              <CreateNewFolder data-testid="setinstallpathbutton" />
-            ) : (
-              <Backspace data-testid="setEpicSyncPathBackspace" />
-            )
-          }
-          onIconClick={handleTargetExe}
-        />
-      )}
 
-      {shouldRenderFpsOption && (
-        <ToggleSwitch
-          htmlId="showFPS"
-          value={showFps}
-          handleChange={toggleFps}
-          title={t('setting.showfps')}
-        />
-      )}
-      {isLinux && (
-        <>
-          <div className="toggleRow">
-            <ToggleSwitch
-              htmlId="gamemode"
-              value={useGameMode}
-              handleChange={handleGameMode}
-              title={t('setting.gamemode')}
-            />
+      <AlternativeExe />
 
-            <FontAwesomeIcon
-              className="helpIcon"
-              icon={faCircleInfo}
-              title={t(
-                'help.gamemode',
-                'Feral GameMode applies automatic and temporary tweaks to the system when running games. Enabling may improve performance.'
-              )}
-            />
-          </div>
+      <ShowFPS />
 
-          <ToggleSwitch
-            htmlId="primerun"
-            value={primeRun}
-            handleChange={togglePrimeRun}
-            title={t('setting.primerun', 'Use Dedicated Graphics Card')}
-          />
+      <GameMode />
 
-          <ToggleSwitch
-            htmlId="audiofix"
-            value={audioFix}
-            handleChange={toggleAudioFix}
-            title={t('setting.audiofix')}
-          />
+      <PrimerRun />
 
-          <div className="toggleRow">
-            <ToggleSwitch
-              htmlId="mongohud"
-              value={showMangohud}
-              handleChange={toggleMangoHud}
-              title={t('setting.mangohud')}
-            />
+      <AudioFix />
 
-            <FontAwesomeIcon
-              className="helpIcon"
-              icon={faCircleInfo}
-              title={t(
-                'help.mangohud',
-                'MangoHUD is an overlay that displays and monitors FPS, temperatures, CPU/GPU load and other system resources.'
-              )}
-            />
-          </div>
-        </>
-      )}
+      <Mongohud />
+
+      <SteamRuntime />
 
       <OfflineMode />
 
