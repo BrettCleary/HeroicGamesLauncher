@@ -459,4 +459,8 @@ declare global {
 export interface SettingsContextType {
   getSetting: (key: string) => unknown
   setSetting: (key: string, value: unknown) => void
+  config: AppSettings | GameSettings | null
+  isDefault: boolean
+  appName: string
+  runner: Runner
 }

@@ -1,14 +1,12 @@
 import './index.css'
 
-import React, { ChangeEvent, useCallback, useContext } from 'react'
+import React, { useCallback, useContext } from 'react'
 
 import { useTranslation } from 'react-i18next'
 import ContextProvider from 'src/state/ContextProvider'
 import {
   InfoBox,
   ToggleSwitch,
-  SelectField,
-  TextInputField,
   TextInputWithIconField
 } from 'src/components/UI'
 import CreateNewFolder from '@mui/icons-material/CreateNewFolder'
@@ -17,52 +15,38 @@ import Backspace from '@mui/icons-material/Backspace'
 import { getGameInfo } from 'src/helpers'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCircleInfo } from '@fortawesome/free-solid-svg-icons'
-import { faFolderOpen } from '@fortawesome/free-solid-svg-icons'
 import { ipcRenderer } from 'src/helpers'
 import { ColumnProps, TableInput } from 'src/components/UI/TwoColTableInput'
+import PreferedLanguage from './PreferedLanguage'
+import LauncherArgs from './LauncherArgs'
+import DefaultSteamPath from './DefaultSteamPath'
+import MaxRecentGames from './MaxRecentGames'
+import DiscordRPC from './DiscordRPC'
+import Shortcuts from './Shortcuts'
+import OfflineMode from './OfflineMode'
 
 interface Props {
   audioFix: boolean
   isDefault: boolean
   isMacNative: boolean
   isLinuxNative: boolean
-  languageCode: string
-  launcherArgs: string
-  canRunOffline: boolean
-  offlineMode: boolean
   enviromentOptions: EnviromentVariable[]
   wrapperOptions: WrapperVariable[]
   primeRun: boolean
-  addDesktopShortcuts: boolean
-  addGamesToStartMenu: boolean
-  discordRPC: boolean
-  setLanguageCode: (value: string) => void
-  setLauncherArgs: (value: string) => void
   setEnviromentOptions: (value: EnviromentVariable[]) => void
   setWrapperOptions: (value: WrapperVariable[]) => void
-  setMaxRecentGames: (value: number) => void
-  setDefaultSteamPath: (value: string) => void
   setTargetExe: (value: string) => void
   showFps: boolean
   showMangohud: boolean
-  maxRecentGames: number
-  defaultSteamPath: string
   toggleAudioFix: () => void
   toggleFps: () => void
   toggleMangoHud: () => void
-  toggleOffline: () => void
   togglePrimeRun: () => void
   toggleUseGameMode: () => void
   toggleEacRuntime: () => void
-  toggleAddDesktopShortcuts: () => void
-  toggleAddGamesToStartMenu: () => void
-  toggleDiscordRPC: () => void
   targetExe: string
   useGameMode: boolean
   eacRuntime: boolean
-  useSteamRuntime: boolean
-  toggleUseSteamRuntime: () => void
-  isProton: boolean
   appName: string
   runner: Runner
 }
@@ -76,13 +60,6 @@ export default function OtherSettings({
   toggleUseGameMode,
   showFps,
   toggleFps,
-  canRunOffline,
-  offlineMode,
-  toggleOffline,
-  languageCode,
-  setLanguageCode,
-  launcherArgs,
-  setLauncherArgs,
   audioFix,
   toggleAudioFix,
   showMangohud,
@@ -90,24 +67,11 @@ export default function OtherSettings({
   isDefault,
   primeRun,
   togglePrimeRun,
-  setMaxRecentGames,
-  addDesktopShortcuts,
-  addGamesToStartMenu,
-  toggleAddDesktopShortcuts,
-  toggleAddGamesToStartMenu,
-  discordRPC,
-  toggleDiscordRPC,
-  maxRecentGames,
   setTargetExe,
   targetExe,
   isMacNative,
   isLinuxNative,
-  toggleUseSteamRuntime,
-  useSteamRuntime,
-  isProton,
   appName,
-  setDefaultSteamPath,
-  defaultSteamPath,
   toggleEacRuntime,
   eacRuntime,
   runner
@@ -143,48 +107,12 @@ export default function OtherSettings({
     )
     return columns
   }
-  const handleLauncherArgs = (event: ChangeEvent<HTMLInputElement>) =>
-    setLauncherArgs(event.currentTarget.value)
-  const handleLanguageCode = (event: ChangeEvent<HTMLInputElement>) =>
-    setLanguageCode(event.currentTarget.value)
+
   const { t } = useTranslation()
   const { platform } = useContext(ContextProvider)
   const isWin = platform === 'win32'
   const isLinux = platform === 'linux'
-  const supportsShortcuts = isWin || isLinux
   const shouldRenderFpsOption = !isMacNative && !isWin && !isLinuxNative
-  const showSteamRuntime = isLinuxNative || isProton
-
-  const launcherArgs_info = (
-    <InfoBox text="infobox.help">
-      <span>
-        {t('help.other.part4')}
-        <strong>{t('help.other.part5')}</strong>
-        {t('help.other.part6')}
-        <strong>{` -nolauncher `}</strong>
-        {t('help.other.part7')}
-      </span>
-    </InfoBox>
-  )
-
-  const languageInfo = (
-    <InfoBox text="infobox.help">
-      {t(
-        'help.game_language.fallback',
-        "Leave blank to use Heroic's language."
-      )}
-      <br />
-      {t(
-        'help.game_language.in_game_config',
-        'Not all games support this configuration, some have in-game language setting.'
-      )}
-      <br />
-      {t(
-        'help.game_language.valid_codes',
-        'Valid language codes are game-dependant.'
-      )}
-    </InfoBox>
-  )
 
   const wrapperInfo = (
     <InfoBox text="infobox.help">
@@ -318,106 +246,19 @@ export default function OtherSettings({
               )}
             />
           </div>
-
-          {showSteamRuntime && (
-            <div className="toggleRow">
-              <ToggleSwitch
-                htmlId="steamruntime"
-                value={useSteamRuntime}
-                handleChange={toggleUseSteamRuntime}
-                title={t('setting.steamruntime', 'Use Steam Runtime')}
-              />
-
-              <FontAwesomeIcon
-                className="helpIcon"
-                icon={faCircleInfo}
-                title={t(
-                  'help.steamruntime',
-                  'Custom libraries provided by Steam to help run Linux and Windows (Proton) games. Enabling might improve compatibility.'
-                )}
-              />
-            </div>
-          )}
         </>
       )}
-      {!isDefault && canRunOffline && (
-        <ToggleSwitch
-          htmlId="offlinemode"
-          value={offlineMode}
-          handleChange={toggleOffline}
-          title={t('setting.offlinemode')}
-        />
-      )}
-      {supportsShortcuts && isDefault && (
-        <>
-          <ToggleSwitch
-            htmlId="shortcutsToDesktop"
-            value={addDesktopShortcuts}
-            handleChange={toggleAddDesktopShortcuts}
-            title={t(
-              'setting.adddesktopshortcuts',
-              'Add desktop shortcuts automatically'
-            )}
-          />
-          <ToggleSwitch
-            htmlId="shortcutsToMenu"
-            value={addGamesToStartMenu}
-            handleChange={toggleAddGamesToStartMenu}
-            title={t(
-              'setting.addgamestostartmenu',
-              'Add games to start menu automatically'
-            )}
-          />
-        </>
-      )}
-      {isDefault && (
-        <ToggleSwitch
-          htmlId="discordRPC"
-          value={discordRPC}
-          handleChange={toggleDiscordRPC}
-          title={t('setting.discordRPC', 'Enable Discord Rich Presence')}
-        />
-      )}
-      {isDefault && (
-        <SelectField
-          label={t('setting.maxRecentGames', 'Recent Games to Show')}
-          htmlId="setMaxRecentGames"
-          extraClass="smaller"
-          onChange={(event) => setMaxRecentGames(Number(event.target.value))}
-          value={maxRecentGames.toString()}
-        >
-          {Array.from(Array(10).keys()).map((n) => (
-            <option key={n + 1}>{n + 1}</option>
-          ))}
-        </SelectField>
-      )}
-      {isDefault && (
-        <TextInputWithIconField
-          label={t('setting.default-steam-path', 'Default Steam path')}
-          htmlId="default_steam_path"
-          value={defaultSteamPath?.replaceAll("'", '')}
-          placeholder={defaultSteamPath}
-          onChange={(event) => setDefaultSteamPath(event.target.value)}
-          icon={
-            <FontAwesomeIcon
-              icon={faFolderOpen}
-              data-testid="setsteampathbutton"
-            />
-          }
-          onIconClick={async () =>
-            ipcRenderer
-              .invoke('openDialog', {
-                buttonLabel: t('box.choose'),
-                properties: ['openDirectory'],
-                title: t('box.default-steam-path', 'Steam path.'),
-                defaultPath: defaultSteamPath
-              })
-              .then(({ path }: Path) =>
-                setDefaultSteamPath(path ? `${path}` : defaultSteamPath)
-              )
-          }
-        />
-      )}
+
+      <OfflineMode />
+
+      <Shortcuts />
+
+      <DiscordRPC />
+
+      <MaxRecentGames />
+
+      <DefaultSteamPath />
+
       {!isWin && (
         <TableInput
           label={t('options.advanced.title')}
@@ -463,32 +304,10 @@ export default function OtherSettings({
           afterInput={wrapperInfo}
         />
       )}
-      {!isDefault && (
-        <TextInputField
-          label={t('options.gameargs.title')}
-          htmlId="launcherArgs"
-          placeholder={t('options.gameargs.placeholder')}
-          value={launcherArgs}
-          onChange={handleLauncherArgs}
-          afterInput={launcherArgs_info}
-        />
-      )}
-      {!isDefault && (
-        <TextInputField
-          label={t(
-            'setting.prefered_language',
-            'Prefered Language (Language Code)'
-          )}
-          htmlId="prefered-language"
-          placeholder={t(
-            'placeholder.prefered_language',
-            '2-char code (i.e.: "en" or "fr")'
-          )}
-          value={languageCode}
-          onChange={handleLanguageCode}
-          afterInput={languageInfo}
-        />
-      )}
+
+      <LauncherArgs />
+
+      <PreferedLanguage />
     </>
   )
 }

@@ -7,12 +7,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Path } from 'src/types'
 import useSetting from '../../hook/useSetting'
 
-const SETTING_KEY = 'defaultInstallPath'
-
 const DefaultInstallPath = () => {
   const { t } = useTranslation()
   const [defaultInstallPath, setDefaultInstallPath] = useSetting<string>(
-    SETTING_KEY,
+    'defaultInstallPath',
     ''
   )
 
