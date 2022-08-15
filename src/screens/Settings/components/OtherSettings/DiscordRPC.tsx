@@ -7,10 +7,7 @@ import SettingsContext from '../../SettingsContext'
 const DiscordRPC = () => {
   const { t } = useTranslation()
   const { isDefault } = useContext(SettingsContext)
-  const [discordRPC, setDiscordRPC] = useSetting<boolean>(
-    'showUnrealMarket',
-    false
-  )
+  const [discordRPC, setDiscordRPC] = useSetting<boolean>('discordRPC', false)
 
   if (!isDefault) {
     return <></>

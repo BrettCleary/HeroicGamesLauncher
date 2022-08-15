@@ -9,7 +9,7 @@ const MaxRecentGames = () => {
   const { isDefault } = useContext(SettingsContext)
 
   const [maxRecentGames, setMaxRecentGames] = useSetting<number>(
-    'maxWorkers',
+    'maxRecentGames',
     5
   )
 

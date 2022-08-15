@@ -12,7 +12,7 @@ const DefaultSteamPath = () => {
   const { t } = useTranslation()
   const { isDefault } = useContext(SettingsContext)
   const [defaultSteamPath, setDefaultSteamPath] = useSetting<string>(
-    'languageCode',
+    'defaultSteamPath',
     ''
   )
 
