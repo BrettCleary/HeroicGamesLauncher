@@ -6,11 +6,9 @@ import { Path, WineInstallation } from 'src/types'
 import { useTranslation } from 'react-i18next'
 import {
   InfoBox,
-  ToggleSwitch,
   SvgButton,
   SelectField,
-  TextInputField,
-  TextInputWithIconField
+  TextInputField
 } from 'src/components/UI'
 
 import AddBoxIcon from '@mui/icons-material/AddBox'
@@ -18,77 +16,41 @@ import ContextProvider from 'src/state/ContextProvider'
 
 import RemoveCircleIcon from '@mui/icons-material/RemoveCircle'
 import { Tooltip } from '@mui/material'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faFolderOpen } from '@fortawesome/free-solid-svg-icons'
-import { faCircleInfo } from '@fortawesome/free-solid-svg-icons'
-import { configStore } from 'src/helpers/electronStores'
 
 import { ipcRenderer } from 'src/helpers'
+import WinePrefix from './WinePrefix'
+import PreferSystemLibs from './PreferSystemLibs'
+import EnableFSR from './EnableFSR'
+import ResizableBar from './ResizableBar'
+import EnableEsync from './EnableEsync'
+import EnableFsync from './EnableFsync'
 
 interface Props {
   altWine: WineInstallation[]
   customWinePaths: string[]
   isDefault: boolean
-  maxSharpness: number
-  enableResizableBar: boolean
   setAltWine: (altWine: WineInstallation[]) => void
   setCustomWinePaths: (value: string[]) => void
   setWineCrossoverBottle: (value: string) => void
-  setWinePrefix: (value: string) => void
-  setDefaultWinePrefix: (value: string) => void
-  setFsrSharpness: (value: number) => void
   setWineVersion: (wine: WineInstallation) => void
-  toggleFSR: () => void
-  toggleResizableBar: () => void
   wineCrossoverBottle: string
-  defaultWinePrefix: string
-  winePrefix: string
   wineVersion: WineInstallation
-  enableFSR: boolean
-  enableEsync: boolean
-  toggleEsync: () => void
-  enableFsync: boolean
-  toggleFsync: () => void
-  preferSystemLibs: boolean
-  togglePreferSystemLibs: () => void
 }
 
 export default function WineSettings({
-  winePrefix,
-  setWinePrefix,
   setWineVersion,
   setAltWine,
   wineVersion,
   altWine,
-  enableFSR,
-  toggleFSR,
   customWinePaths,
   setCustomWinePaths,
   wineCrossoverBottle,
   setWineCrossoverBottle,
-  isDefault,
-  setFsrSharpness,
-  maxSharpness,
-  enableResizableBar,
-  toggleResizableBar,
-  enableEsync,
-  toggleEsync,
-  enableFsync,
-  toggleFsync,
-  defaultWinePrefix,
-  setDefaultWinePrefix,
-  preferSystemLibs,
-  togglePreferSystemLibs
+  isDefault
 }: Props) {
   const [selectedPath, setSelectedPath] = useState('')
   const { platform } = useContext(ContextProvider)
   const isLinux = platform === 'linux'
-  const isProton = wineVersion.type === 'proton'
-  const home = configStore.get('userHome', '')
-
-  if (winePrefix === '') {
-    winePrefix = `${home}/.wine`
-  }
 
   useEffect(() => {
     const getAltWine = async () => {
@@ -133,70 +95,7 @@ export default function WineSettings({
     <>
       <h3 className="settingSubheader">{isLinux ? 'Wine' : 'Crossover'}</h3>
 
-      {isLinux && isDefault && (
-        <TextInputWithIconField
-          htmlId="selectDefaultWinePrefix"
-          label={t(
-            'setting.defaultWinePrefix',
-            'Set Folder for new Wine Prefixes'
-          )}
-          value={defaultWinePrefix}
-          onChange={(event) => setDefaultWinePrefix(event.target.value)}
-          icon={
-            <FontAwesomeIcon
-              icon={faFolderOpen}
-              data-testid="addWinePrefix"
-              title={t(
-                'toolbox.settings.wineprefix',
-                'Select a Folder for new Wine Prefixes'
-              )}
-            />
-          }
-          onIconClick={async () =>
-            ipcRenderer
-              .invoke('openDialog', {
-                buttonLabel: t('box.choose'),
-                properties: ['openDirectory'],
-                title: t('box.wineprefix'),
-                defaultPath: defaultWinePrefix
-              })
-              .then(({ path }: Path) =>
-                setDefaultWinePrefix(path ? `${path}` : defaultWinePrefix)
-              )
-          }
-        />
-      )}
-
-      {isLinux && (
-        <TextInputWithIconField
-          htmlId="selectWinePrefix"
-          label={t('setting.wineprefix')}
-          value={winePrefix}
-          onChange={(event) => setWinePrefix(event.target.value)}
-          icon={
-            <FontAwesomeIcon
-              icon={faFolderOpen}
-              data-testid="addWinePrefix"
-              title={t(
-                'toolbox.settings.default-wineprefix',
-                'Select the default prefix folder for new configs'
-              )}
-            />
-          }
-          onIconClick={async () =>
-            ipcRenderer
-              .invoke('openDialog', {
-                buttonLabel: t('box.choose'),
-                properties: ['openDirectory'],
-                title: t('box.wineprefix'),
-                defaultPath: defaultWinePrefix
-              })
-              .then(({ path }: Path) =>
-                setWinePrefix(path ? `${path}` : winePrefix)
-              )
-          }
-        />
-      )}
+      <WinePrefix />
 
       {isDefault && isLinux && (
         <SelectField
@@ -306,123 +205,15 @@ export default function WineSettings({
         />
       )}
 
-      {isLinux && !isProton && (
-        <div className="toggleRow">
-          <ToggleSwitch
-            htmlId="systemLibsToggle"
-            value={preferSystemLibs || false}
-            handleChange={togglePreferSystemLibs}
-            title={t('setting.preferSystemLibs', 'Prefer system libraries')}
-          />
+      <PreferSystemLibs />
 
-          <FontAwesomeIcon
-            className="helpIcon"
-            icon={faCircleInfo}
-            title={t(
-              'help.preferSystemLibs',
-              'Custom Wine versions (Wine-GE, Wine-Lutris) are shipped with their library dependencies. By enabling this option, these shipped libraries will be ignored and Wine will load system libraries instead. Warning! Issues may occur if dependencies are not met.'
-            )}
-          />
-        </div>
-      )}
+      <EnableFSR />
 
-      {isLinux && (
-        <div className="toggleRow">
-          <ToggleSwitch
-            htmlId="enableFSR"
-            value={enableFSR || false}
-            handleChange={toggleFSR}
-            title={t(
-              'setting.enableFSRHack',
-              'Enable FSR Hack (Wine version needs to support it)'
-            )}
-          />
+      <ResizableBar />
 
-          <FontAwesomeIcon
-            className="helpIcon"
-            icon={faCircleInfo}
-            title={t(
-              'help.amdfsr',
-              "AMD's FSR helps boost framerate by upscaling lower resolutions in Fullscreen Mode. Image quality increases from 5 to 1 at the cost of a slight performance hit. Enabling may improve performance."
-            )}
-          />
-        </div>
-      )}
+      <EnableEsync />
 
-      {enableFSR && (
-        <SelectField
-          htmlId="setFsrSharpness"
-          onChange={(event) => setFsrSharpness(Number(event.target.value))}
-          value={maxSharpness.toString()}
-          label={t('setting.FsrSharpnessStrenght', 'FSR Sharpness Strength')}
-          extraClass="smaller"
-        >
-          {Array.from(Array(5).keys()).map((n) => (
-            <option key={n + 1}>{n + 1}</option>
-          ))}
-        </SelectField>
-      )}
-
-      {isLinux && (
-        <>
-          <div className="toggleRow">
-            <ToggleSwitch
-              htmlId="resizableBar"
-              value={enableResizableBar || false}
-              handleChange={toggleResizableBar}
-              title={t(
-                'setting.resizableBar',
-                'Enable Resizable BAR (NVIDIA RTX only)'
-              )}
-            />
-
-            <FontAwesomeIcon
-              className="helpIcon"
-              icon={faCircleInfo}
-              title={t(
-                'help.resizablebar',
-                "NVIDIA's Resizable Bar helps boost framerate by making the CPU access the entire graphics buffer. Enabling may improve performance for Vulkan-based games."
-              )}
-            />
-          </div>
-
-          <div className="toggleRow">
-            <ToggleSwitch
-              htmlId="esyncToggle"
-              value={enableEsync || false}
-              handleChange={toggleEsync}
-              title={t('setting.esync', 'Enable Esync')}
-            />
-
-            <FontAwesomeIcon
-              className="helpIcon"
-              icon={faCircleInfo}
-              title={t(
-                'help.esync',
-                'Esync aims to reduce wineserver overhead in CPU-intensive games. Enabling may improve performance.'
-              )}
-            />
-          </div>
-
-          <div className="toggleRow">
-            <ToggleSwitch
-              htmlId="fsyncToggle"
-              value={enableFsync || false}
-              handleChange={toggleFsync}
-              title={t('setting.fsync', 'Enable Fsync')}
-            />
-
-            <FontAwesomeIcon
-              className="helpIcon"
-              icon={faCircleInfo}
-              title={t(
-                'help.fsync',
-                'Fsync aims to reduce wineserver overhead in CPU-intensive games. Enabling may improve performance on supported Linux kernels.'
-              )}
-            />
-          </div>
-        </>
-      )}
+      <EnableFsync />
     </>
   )
 }

@@ -15,7 +15,6 @@ import {
 import { Clipboard, IpcRenderer } from 'electron'
 import { NavLink, useLocation, useParams } from 'react-router-dom'
 import { getGameInfo, writeConfig } from 'src/helpers'
-import { useToggle } from 'src/hooks'
 import { useTranslation } from 'react-i18next'
 import ArrowCircleLeftIcon from '@mui/icons-material/ArrowCircleLeft'
 
@@ -64,13 +63,11 @@ function Settings() {
   } as WineInstallation)
   const [winePrefix, setWinePrefix] = useState(`${home}/.wine`)
   const [wineCrossoverBottle, setWineCrossoverBottle] = useState('Heroic')
-  const [defaultWinePrefix, setDefaultWinePrefix] = useState('')
   const [enviromentOptions, setEnviromentOptions] = useState<
     EnviromentVariable[]
   >([])
   const [wrapperOptions, setWrapperOptions] = useState<WrapperVariable[]>([])
   const [title, setTitle] = useState('')
-  const [maxSharpness, setFsrSharpness] = useState(5)
   const [customWinePaths, setCustomWinePaths] = useState([] as Array<string>)
   const [savesPath, setSavesPath] = useState('')
   const [gogSavesLocations, setGogSavesLocations] = useState(
@@ -79,57 +76,6 @@ function Settings() {
   const [currentConfig, setCurrentConfig] = useState<
     AppSettings | GameSettings | null
   >(null)
-
-  const {
-    on: useGameMode,
-    toggle: toggleUseGameMode,
-    setOn: setUseGameMode
-  } = useToggle(false)
-  const {
-    on: autoInstallDxvk,
-    toggle: toggleAutoInstallDxvk,
-    setOn: setAutoInstallDxvk
-  } = useToggle(false)
-  const {
-    on: autoInstallVkd3d,
-    toggle: toggleAutoInstallVkd3d,
-    setOn: setAutoInstallVkd3d
-  } = useToggle(false)
-  const {
-    on: preferSystemLibs,
-    toggle: togglePreferSystemLibs,
-    setOn: setPreferSystemLibs
-  } = useToggle(false)
-  const {
-    on: enableFSR,
-    toggle: toggleFSR,
-    setOn: setEnableFSR
-  } = useToggle(false)
-  const {
-    on: enableResizableBar,
-    toggle: toggleResizableBar,
-    setOn: setResizableBar
-  } = useToggle(false)
-  const {
-    on: enableEsync,
-    toggle: toggleEsync,
-    setOn: setEnableEsync
-  } = useToggle(false)
-  const {
-    on: enableFsync,
-    toggle: toggleFsync,
-    setOn: setEnableFsync
-  } = useToggle(false)
-  const {
-    on: eacRuntime,
-    toggle: toggleEacRuntime,
-    setOn: setEacRuntime
-  } = useToggle(false)
-  const {
-    on: battlEyeRuntime,
-    toggle: toggleBattlEyeRuntime,
-    setOn: setBattlEyeRuntime
-  } = useToggle(false)
 
   const [autoSyncSaves, setAutoSyncSaves] = useState(false)
   const [altWine, setAltWine] = useState([] as WineInstallation[])
@@ -159,27 +105,15 @@ function Settings() {
       )
       setCurrentConfig(config)
       setAutoSyncSaves(config.autoSyncSaves)
-      setUseGameMode(config.useGameMode)
       setWineVersion(config.wineVersion)
       setWinePrefix(config.winePrefix)
       setWineCrossoverBottle(config.wineCrossoverBottle)
       setEnviromentOptions(config.enviromentOptions)
       setWrapperOptions(config.wrapperOptions)
-      setAutoInstallDxvk(config.autoInstallDxvk)
-      setAutoInstallVkd3d(config.autoInstallVkd3d)
-      setPreferSystemLibs(config.preferSystemLibs)
-      setEnableEsync(config.enableEsync)
-      setEnableFsync(config.enableFsync)
-      setEnableFSR(config.enableFSR)
-      setFsrSharpness(config.maxSharpness || 2)
-      setResizableBar(config.enableResizableBar)
       setSavesPath(config.savesPath || '')
       setGogSavesLocations(config.gogSaves || [])
       setCustomWinePaths(config.customWinePaths || [])
       setCustomWinePaths(config.customWinePaths || [])
-      setDefaultWinePrefix(config.defaultWinePrefix)
-      setEacRuntime(config.eacRuntime || false)
-      setBattlEyeRuntime(config.battlEyeRuntime || false)
 
       if (!isDefault) {
         const info = await getGameInfo(appName, runner)
@@ -260,49 +194,18 @@ function Settings() {
                 altWine={altWine}
                 setAltWine={setAltWine}
                 wineVersion={wineVersion}
-                winePrefix={winePrefix}
                 setWineVersion={setWineVersion}
-                setWinePrefix={setWinePrefix}
                 wineCrossoverBottle={wineCrossoverBottle}
                 setWineCrossoverBottle={setWineCrossoverBottle}
                 customWinePaths={customWinePaths}
                 setCustomWinePaths={setCustomWinePaths}
                 isDefault={isDefault}
-                enableFSR={enableFSR}
-                toggleFSR={toggleFSR}
-                enableEsync={enableEsync}
-                toggleEsync={toggleEsync}
-                enableFsync={enableFsync}
-                toggleFsync={toggleFsync}
-                defaultWinePrefix={defaultWinePrefix}
-                setDefaultWinePrefix={setDefaultWinePrefix}
-                maxSharpness={maxSharpness}
-                setFsrSharpness={setFsrSharpness}
-                enableResizableBar={enableResizableBar}
-                toggleResizableBar={toggleResizableBar}
-                preferSystemLibs={preferSystemLibs}
-                togglePreferSystemLibs={togglePreferSystemLibs}
               />
             )}
             {isWineSettings && !isDefault && (
               <Tools appName={appName} runner={runner} />
             )}
-            {isWineExtensions && (
-              <WineExtensions
-                winePrefix={winePrefix}
-                wineVersion={wineVersion}
-                eacRuntime={eacRuntime}
-                toggleEacRuntime={toggleEacRuntime}
-                gameMode={useGameMode}
-                toggleGameMode={toggleUseGameMode}
-                battlEyeRuntime={battlEyeRuntime}
-                toggleBattlEyeRuntime={toggleBattlEyeRuntime}
-                autoInstallDxvk={autoInstallDxvk}
-                toggleAutoInstallDxvk={toggleAutoInstallDxvk}
-                autoInstallVkd3d={autoInstallVkd3d}
-                toggleAutoInstallVkd3d={toggleAutoInstallVkd3d}
-              />
-            )}
+            {isWineExtensions && <WineExtensions />}
             {isOtherSettings && (
               <OtherSettings
                 enviromentOptions={enviromentOptions}
